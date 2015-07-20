@@ -3,25 +3,25 @@
 var type = require('type-of-is');
 var debug = require('debug');
 
-function authorize(path, req, res, next) {
+function authorize(route, req, res, next) {
   var allowed = true;
 
-  switch (type.is(path.allows)) {
+  switch (type.is(route.allows)) {
     case Array:
-      allowed = path.allows.indexOf(req.session.authorized) >= 0;
+      allowed = route.allows.indexOf(req.session.authorized) > -1;
       break;
 
     case String:
-      allowed = path.allows === req.session.authorized;
+      allowed = route.allows === req.session.authorized;
       break;
   }
 
   if (allowed) {
-    debug("%s %s --> [%s]-[%s] --> OK", req.method, req.path, path.allows, req.session.authorized);
+    debug("%s %s --> [%s]-[%s] --> OK", req.method, req.path, route.allows, req.session.authorized);
     return next();
   }
 
-  debug("%s %s --> [%s]-[%s] --> DENY", req.method, req.path, path.allows, req.session.authorized);
+  debug("%s %s --> [%s]-[%s] --> DENY", req.method, req.path, route.allows, req.session.authorized);
 
   res.status(403).end();
 }
@@ -47,33 +47,33 @@ module.exports = function (app, config) {
   });
 
   /* Filter each path */
-  config.paths.forEach(function (path) {
-    if (!path.route) {
-      return debug("No route specified! --> %s", JSON.stringify(path));
+  config.routes.forEach(function (route) {
+    if (!route.path) {
+      return debug("No route specified! --> %s", JSON.stringify(route));
     }
 
-    var route = app.route(path.route);
-
-    debug("%s --> %s : %s", path.method, path.route, path.allows);
+    debug("%s --> %s : %s", route.method, route.path, route.allows);
 
     function callback(req, res, next) {
-      authorize(path, req, res, next);
+      authorize(route, req, res, next);
     }
 
+    var router = app.route(route.path);
+
     /* If method is an array */
-    if (type.is(path.method, Array)) {
-      return path.method.forEach(function (method) {
-        route[method.toLowerCase()](callback);
+    if (type.is(route.method, Array)) {
+      return route.method.forEach(function (method) {
+        router[method.toLowerCase()](callback);
       });
     }
 
     /* If method is a string */
-    if (type.is(path.method, String)) {
-      return route[path.method.toLowerCase()](callback);
+    if (type.is(route.method, String)) {
+      return router[route.method.toLowerCase()](callback);
     }
 
     /* If no method is specified, default to All */
-    route.all(callback);
+    router(callback);
 
   });
 
