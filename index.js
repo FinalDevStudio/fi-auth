@@ -1,8 +1,26 @@
+/**
+ * Fi Seed's Component Auth.
+ *
+ * This component is used to configure route authorization on an Express application.
+ *
+ * @type Node Module
+ */
+
 'use strict';
 
 var type = require('type-of-is');
 var debug = require('debug');
 
+/**
+ * Authorizes a route for the current session.
+ *
+ * @type Express Middleware.
+ *
+ * @param route {Object} The route object.
+ * @param req {Object} Express' req object.
+ * @param res {Object} Express' res object.
+ * @param next {Function} Express' next function.
+ */
 function authorize(route, req, res, next) {
   var allowed = true;
 
@@ -26,7 +44,13 @@ function authorize(route, req, res, next) {
   res.status(403).end();
 }
 
-module.exports = function (app, config) {
+/**
+ * Initializes and registers route athuorizations.
+ *
+ * @param app {Object} Express application.
+ * @param config {Object} Configuration object.
+ */
+function auth(app, config) {
 
   if (!type.is(config.authorizer, Function)) {
     throw new TypeError("Authorizer must be a function!");
@@ -48,8 +72,8 @@ module.exports = function (app, config) {
 
   /* Filter each path */
   config.routes.forEach(function (route) {
-    if (!route.path) {
-      return debug("No route specified! --> %s", JSON.stringify(route));
+    if (!type.is(route.path, Array) || !type.is(route.path, String)) {
+      throw new TypeError("The route's path must be a String or an Array of strings!");
     }
 
     debug("%s --> %s : %s", route.method, route.path, route.allows);
@@ -72,9 +96,11 @@ module.exports = function (app, config) {
       return router[route.method.toLowerCase()](callback);
     }
 
-    /* If no method is specified, default to All */
+    /* If no method is specified default to ALL */
     router(callback);
 
   });
 
-};
+}
+
+module.exports = auth;
