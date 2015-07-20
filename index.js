@@ -16,10 +16,10 @@ var debug = require('debug');
  *
  * @type Express Middleware.
  *
- * @param route {Object} The route object.
- * @param req {Object} Express' req object.
- * @param res {Object} Express' res object.
- * @param next {Function} Express' next function.
+ * @param {Object} route The route object.
+ * @param {Object} req Express' req object.
+ * @param {Object} res Express' res object.
+ * @param {Function} next Express' next function.
  */
 function authorize(route, req, res, next) {
   var allowed = true;
@@ -47,15 +47,16 @@ function authorize(route, req, res, next) {
 /**
  * Initializes and registers route athuorizations.
  *
- * @param app {Object} Express application.
- * @param config {Object} Configuration object.
+ * @param {Object} app Express application.
+ * @param {Object} config Configuration object.
  */
 function auth(app, config) {
-
+  /* Ensure authorizer */
   if (!type.is(config.authorizer, Function)) {
     throw new TypeError("Authorizer must be a function!");
   }
 
+  /* Check debug type */
   if (type.is(config.debug, String)) {
     debug = debug(config.debug);
   } else if (config.debug) {
@@ -70,7 +71,7 @@ function auth(app, config) {
     next();
   });
 
-  /* Filter each path */
+  /* Set authorization rules for each path */
   config.routes.forEach(function (route) {
     if (!type.is(route.path, Array) || !type.is(route.path, String)) {
       throw new TypeError("The route's path must be a String or an Array of strings!");
@@ -78,10 +79,12 @@ function auth(app, config) {
 
     debug("%s --> %s : %s", route.method, route.path, route.allows);
 
+    /* Callback for each method */
     function callback(req, res, next) {
       authorize(route, req, res, next);
     }
 
+    /* The base router */
     var router = app.route(route.path);
 
     /* If method is an array */
@@ -98,9 +101,7 @@ function auth(app, config) {
 
     /* If no method is specified default to ALL */
     router(callback);
-
   });
-
 }
 
 module.exports = auth;
