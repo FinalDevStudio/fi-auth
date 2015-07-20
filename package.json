@@ -1,0 +1,22 @@
+{
+  "name": "fi-seed-component-auth",
+  "title": "Fi Seed Component Auth",
+  "description": "Fi Seed's route authorization component",
+  "version": "1.0.0",
+  "private": false,
+  "license": "MIT",
+  "author": "Final Development Studio <sorcery@finaldevstudio.com> (http://finaldevstudio.com)",
+  "contributors": [
+    "Santiago G. Marín <santiago@finaldevstudio.com>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/finaldevstudio/fi-seed-component-auth.git"
+  },
+  "scripts": {},
+  "dependencies": {
+    "debug": "^2.2.0",
+    "type-of-is": "^3.4.0"
+  },
+  "devDependencies": {}
+}
