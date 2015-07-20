@@ -24,18 +24,15 @@ var debug = require('debug');
 function authorize(route, req, res, next) {
   var allowed = true;
 
-  switch (type.is(route.allows)) {
-    case Array:
-      allowed = route.allows.indexOf(req.session.authorized) > -1;
-      break;
-
-    case String:
-      allowed = route.allows === req.session.authorized;
-      break;
+  if (type.is(route.allows, Array)) {
+    allowed = route.allows.indexOf(req.session.authorized) > -1;
+  } else if (type.is(route.allows, String)) {
+    allowed = route.allows === req.session.authorized;
   }
 
   if (allowed) {
     debug("%s %s --> [%s]-[%s] --> OK", req.method, req.path, route.allows, req.session.authorized);
+
     return next();
   }
 
@@ -65,9 +62,10 @@ function auth(app, config) {
     debug = function () {};
   }
 
-  /* Set the session authorized property */
   app.use(function (req, res, next) {
+    /* Set the session authorized property */
     req.session.authorized = config.authorizer(req);
+
     next();
   });
 
@@ -77,7 +75,7 @@ function auth(app, config) {
       throw new TypeError("The route's path must be a String or an Array of strings!");
     }
 
-    debug("%s --> %s : %s", route.method, route.path, route.allows);
+    debug("%s %s --> %s", route.method, route.path, route.allows);
 
     /* Callback for each method */
     function callback(req, res, next) {
