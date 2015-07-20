@@ -71,7 +71,7 @@ function auth(app, config) {
 
   /* Set authorization rules for each path */
   config.routes.forEach(function (route) {
-    if (!type.is(route.path, Array) || !type.is(route.path, String)) {
+    if (!type.is(route.path, Array) && !type.is(route.path, String)) {
       throw new TypeError("The route's path must be a String or an Array of strings!");
     }
 
