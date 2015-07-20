@@ -11,12 +11,22 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/finaldevstudio/fi-seed-component-auth.git"
+    "url": "git+https://github.com/finaldevstudio/fi-seed-component-auth.git"
   },
   "scripts": {},
   "dependencies": {
     "debug": "^2.2.0",
     "type-of-is": "^3.4.0"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "bugs": {
+    "url": "https://github.com/finaldevstudio/fi-seed-component-auth/issues"
+  },
+  "homepage": "https://github.com/finaldevstudio/fi-seed-component-auth#readme",
+  "main": "index.js",
+  "keywords": [
+    "fi-seed",
+    "component",
+    "auth"
+  ]
 }
