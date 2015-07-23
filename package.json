@@ -2,7 +2,7 @@
   "name": "fi-seed-component-auth",
   "title": "Fi Seed Component Auth",
   "description": "Fi Seed's route authorization component",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": false,
   "license": "MIT",
   "author": "Final Development Studio <sorcery@finaldevstudio.com> (http://finaldevstudio.com)",
