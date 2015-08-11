@@ -19,8 +19,9 @@ var auth = require('fi-seed-component-auth');
 You must call it with your Express's app instance, to attach the routes, and a configuration object. It's important to initialize the session before you configure **Auth**:
 
 ```js
-var express = require('express');
+var auth = require('fi-seed-component-auth');
 var session = require('express-session');
+var express = require('express');
 
 var app = express();
 
@@ -39,10 +40,10 @@ The configuration object must have an authorizer function and a route array. The
 **IMPORTANT**: All routes are allowed by default!
 
 - **debug**:
-  - This option can be a `String` to use the [debug](https://github.com/visionmedia/debug) module or `true` to use `console.log`.
+  - This option can be a `Function` to log with or a `Boolean`. If `true` it'll use `console.log`.
 
 - **authorizer**:
-  - This is required and must be a `function`. This function is run on each request and should return the value that will be evaluated against the `allows` parameter value inside each route definition. The authorizer value will be attached to `req.session.authorized`.
+  - This is required and must be a `Function`. This function is run on each request and should return the value that will be evaluated against the `allows` parameter value inside each route definition. The authorizer result will be attached to `req.session.authorized` so it must return a value to compare against each route's `allows` parameter.
 
 - **routes**:
   - An `Array` with the routes to authorize:
