@@ -1,5 +1,11 @@
-# fi-auth
+# Fi Auth
 Route authorization module for Node.js Express apps
+
+## Installing
+
+```sh
+npm install --save fi-routes
+```
 
 ## Usage
 
