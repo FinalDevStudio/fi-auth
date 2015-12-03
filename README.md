@@ -1,5 +1,5 @@
 # Fi Auth
-Route authorization module for Node.js Express apps
+Route authorization module for Node.js Express applications.
 
 ## Installing
 
