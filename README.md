@@ -1,4 +1,4 @@
-# fi-auth
+# Fi Auth
 Route authorization module for Node.js Express apps
 
 ## Usage
