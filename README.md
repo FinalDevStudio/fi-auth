@@ -1,80 +1,83 @@
-# fi-seed-component-auth
-Fi Seed's route authorization component
+# fi-auth
+Route authorization module for Node.js Express apps
 
 ## Usage
 
-### Use on fi-seed
-
 ```js
-var auth = component('auth');
-```
-
-### Use on Express app
-
-```js
-var auth = require('fi-seed-component-auth');
+var auth = require('fi-auth');
 ```
 
 ### Initialization
-You must call it with your Express's app instance, to attach the routes, and a configuration object. It's important to initialize the session before you configure **Auth**:
+You must call it with your Express' app instance, to attach the routes, and a configuration object. It's important to initialize the Express' session before you configure **Fi Auth**:
 
 ```js
-var auth = require('fi-seed-component-auth');
 var session = require('express-session');
 var express = require('express');
+var auth = require('fi-auth');
 
 var app = express();
 
-app.use(session({
-  /* Session config */
-}));
+app.use(session());
 
 auth(app, config);
 
-/* And now your routes */
+/* And now your routes... */
+app.get('/', function (req, res, next) {
+  //...
+});
 ```
 
 ### Configuration
-The configuration object must have an authorizer function and a route array. The `debug` parameter is optional but recommended.
+The configuration `Object` must have an authorizer function and a route array. The `debug` parameter is optional but recommended.
 
 **IMPORTANT**: All routes are allowed by default!
 
-- **debug**:
-  - This option can be a `Function` to log with or a `Boolean`. If `true` it'll use `console.log`.
+- **debug**: This option can be a `Function` to log with or a `Boolean`. If `true` it'll use `console.log`.
 
-- **authorizer**:
-  - This is required and must be a `Function`. This function is run on each request and should return the value that will be evaluated against the `allows` parameter value inside each route definition. The authorizer result will be attached to `req.session.authorized` so it must return a value to compare against each route's `allows` parameter.
+- **authorizer**: This is required and must be a `Function`. This `Function` runs on each request and should return the `String` or `Number` that will be compared against the `allows` parameter value inside each route definition. The *authorizer* `Function` return value will be attached to `req.session.authorized`.
 
-- **routes**:
-  - An `Array` with the routes to authorize:
-    - **method**: A `String` or an `Array` of HTTP request methods to filter. If no method is specified it defaults to 'ALL';
-    - **route**: A `String` or an `Array` of strings to filter.
-    - **allows**: A `String` or an `Array` of authorization values to filter:
+- **routes**: An `Array` with the routes to authorize:
+  - **method**: A `String` or an `Array` of HTTP request method(s) to filter. If no method is specified it defaults to all.
+  - **path**: A `String` or an `Array` of strings with the route(s) path(s) to filter.
+  - **allows**: A `String` or an `Array` of authorization value(s) to compare with the authorizer method returned value.
 
+#### Example configuration
 ```js
 {
-  debug: 'app:auth',
+
+  debug: require('debug')('app:auth'),
 
   authorizer: function (req) {
+    /* IMPORTANT: This is just a simple example */
+
+    /* Check if there's a user in session */
     if (req.session.user) {
+      /* Check whether the user has 'admin' role */
       return req.session.user.admin && 'admin' || 'user';
     }
 
-    return false;
+    /* There's no user in session */
+    return null;
   },
 
+  /* Routes authorization definition */
   routes: [{
-    method: 'GET',
-    route: '/api/users',
-    allows: 'admin'
+    /* All request methods are filtered */
+    path: '/api/users/count', /* On this route path only */
+    allows: 'admin'   /* And allows 'admin' only */
   }, {
-    method: ['POST', 'PUT', 'DELETE'],
-    route: ['/api/users', '/api/stuff'],
-    allows: 'admin'
+    method: 'GET', /* Only GET requests are filtered */
+    path: '/api/users', /* On this route path only */
+    allows: 'admin'   /* And allows 'admin' only */
   }, {
-    method: ['POST', 'PUT', 'DELETE'],
-    route: '/api/content',
-    allows: ['user', 'admin']
+    method: ['POST', 'PUT', 'DELETE'], /* Only POST, PUT and DELETE requests are filtered */
+    path: ['/api/users', '/api/stuff'], /* On this route paths only */
+    allows: 'admin' /* And allows 'admin' only */
+  }, {
+    method: ['POST', 'DELETE'],  /* Only POST, PUT and DELETE requests are filtered */
+    path: '/api/content',  /* On this route path only */
+    allows: ['user', 'admin'] /* And allows both 'user' and 'admin' */
   }]
+
 }
 ```
