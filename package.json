@@ -17,6 +17,7 @@
     "test": "./node_modules/mocha/bin/mocha --reporter list test/*.js"
   },
   "dependencies": {
+    "is_js": "^0.7.4",
     "type-of-is": "^3.4.0"
   },
   "devDependencies": {
