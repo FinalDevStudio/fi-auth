@@ -1,7 +1,7 @@
 {
-  "name": "fi-seed-component-auth",
-  "title": "Fi Seed Component Auth",
-  "description": "Fi Seed's route authorization component",
+  "name": "fi-auth",
+  "title": "Fi Auth",
+  "description": "Route authorization module for Node.js Express apps",
   "version": "1.0.4",
   "private": false,
   "license": "MIT",
@@ -11,7 +11,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/finaldevstudio/fi-seed-component-auth.git"
+    "url": "git+https://github.com/finaldevstudio/fi-auth.git"
   },
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha --reporter list test/*.js"
@@ -29,13 +29,16 @@
     "tough-cookie": "^2.0.0"
   },
   "bugs": {
-    "url": "https://github.com/finaldevstudio/fi-seed-component-auth/issues"
+    "url": "https://github.com/finaldevstudio/fi-auth/issues"
   },
-  "homepage": "https://github.com/finaldevstudio/fi-seed-component-auth#readme",
+  "homepage": "https://github.com/finaldevstudio/fi-auth#readme",
   "main": "index.js",
   "keywords": [
-    "fi-seed",
+    "authorization",
     "component",
+    "express",
+    "fi-seed",
+    "route",
     "auth"
   ]
 }
