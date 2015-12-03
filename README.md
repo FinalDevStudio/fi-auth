@@ -4,7 +4,7 @@ Route authorization module for Node.js Express apps
 ## Installing
 
 ```sh
-npm install --save fi-routes
+npm install --save fi-auth
 ```
 
 ## Usage
