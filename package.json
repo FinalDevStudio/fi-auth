@@ -14,7 +14,7 @@
     "url": "git+https://github.com/finaldevstudio/fi-auth.git"
   },
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha --reporter list test/*.js"
+    "test": "./node_modules/mocha/bin/mocha ./test/**/*.js"
   },
   "dependencies": {
     "fi-is": "^1.1.1"
