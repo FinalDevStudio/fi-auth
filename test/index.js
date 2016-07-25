@@ -1,29 +1,21 @@
 'use strict';
 
-var session = require('express-session');
-var bodyParser = require('body-parser');
-var request = require('request');
-var express = require('express');
-var expect = require('chai').expect;
-var auth = require('../lib');
+const session = require('express-session');
+const bodyParser = require('body-parser');
+const request = require('request');
+const express = require('express');
+const expect = require('chai').expect;
+const auth = require('../lib');
 
-var responses = {
-  hello: "Hello, world!"
+const responses = {
+  hello: 'Hello, world!'
 };
 
-var logins = {
-  user: {},
-
-  admin: {
-    admin: true
-  }
-};
-
-/* the auth component configuration */
-var config = {
+/* The auth component configuration */
+const config = {
   debug: true,
 
-  authorizer: function(req) {
+  authorizer: (req) => {
     if (req.session.user) {
       if (req.session.user.admin) {
         return 'admin';
@@ -63,8 +55,10 @@ var config = {
   }]
 };
 
-describe('Fi Auth', function() {
-  before(function(done) {
+var rq;
+
+describe('Fi Auth', function () {
+  before(function (done) {
     /* Create the express app */
     var app = express();
 
@@ -72,6 +66,7 @@ describe('Fi Auth', function() {
     app.use(bodyParser.urlencoded({
       extended: false
     }));
+
     app.use(bodyParser.json());
 
     /* Initialize the session before anything else */
@@ -88,30 +83,30 @@ describe('Fi Auth', function() {
     auth(app, config);
 
     /* Now declare the routes */
-    app.get('/', function(req, res) {
+    app.get('/', function (req, res) {
       res.send(responses.hello);
     });
 
-    app.post('/login', function(req, res) {
+    app.post('/login', function (req, res) {
       req.session.user = req.body;
       res.status(204).end();
     });
 
-    app.get('/users', function(req, res) {
+    app.get('/users', function (req, res) {
       res.status(204).end();
     });
 
-    app.get('/no-methods', function(req, res) {
+    app.get('/no-methods', function (req, res) {
       res.status(204).end();
     });
 
-    app.get('/no-methods/:id', function(req, res) {
+    app.get('/no-methods/:id', function (req, res) {
       res.status(204).end();
     });
 
-    var server = app.listen(0, function() {
+    const server = app.listen(0, () => {
       /* Initialize the request object */
-      request = request.defaults({
+      rq = request.defaults({
         baseUrl: 'http://localhost:' + server.address().port,
         jar: true
       });
@@ -120,33 +115,34 @@ describe('Fi Auth', function() {
     });
   });
 
-  describe('object', function() {
-    it('should be a function', function() {
+  describe('object', function () {
+    it('should be a function', function () {
       expect(auth).to.be.a('function');
     });
   });
 
-  describe('server', function() {
-    it('should respond a 200 status code and "Hello Word!" as body', function(done) {
-      request('/', function(err, res, body) {
-        expect(err).to.be.null;
+  describe('server', function () {
+    it('should respond a 200 status code and \'Hello Word!\' as body',
+      function (done) {
+        rq('/', function (err, res, body) {
+          expect(err).to.be.null;
 
-        expect(res.statusCode).to.be.a('number');
-        expect(res.statusCode).to.equal(200);
+          expect(res.statusCode).to.be.a('number');
+          expect(res.statusCode).to.equal(200);
 
-        expect(body).to.be.a('string');
-        expect(body).to.equal(responses.hello);
+          expect(body).to.be.a('string');
+          expect(body).to.equal(responses.hello);
 
-        expect(res.headers).to.be.an('object');
+          expect(res.headers).to.be.an('object');
 
-        done();
+          done();
+        });
       });
-    });
   });
 
-  describe('auth', function() {
-    it('[GET /users] should respond a 403 status code', function(done) {
-      request('/users', function(err, res) {
+  describe('auth', function () {
+    it('[GET /users] should respond a 403 status code', function (done) {
+      rq('/users', function (err, res) {
         expect(err).to.be.null;
 
         expect(res.statusCode).to.be.a('number');
@@ -156,8 +152,9 @@ describe('Fi Auth', function() {
       });
     });
 
-    it('[GET /no-methods] should respond a 403 status code', function(done) {
-      request('/no-methods', function(err, res) {
+    it('[GET /no-methods] should respond a 403 status code', function (
+      done) {
+      rq('/no-methods', function (err, res) {
         expect(err).to.be.null;
 
         expect(res.statusCode).to.be.a('number');
@@ -167,35 +164,38 @@ describe('Fi Auth', function() {
       });
     });
 
-    it('[GET /no-methods/22] should respond a 403 status code', function(done) {
-      request('/no-methods/22', function(err, res) {
-        expect(err).to.be.null;
+    it('[GET /no-methods/22] should respond a 403 status code',
+      function (done) {
+        rq('/no-methods/22', function (err, res) {
+          expect(err).to.be.null;
 
-        expect(res.statusCode).to.be.a('number');
-        expect(res.statusCode).to.equal(403);
+          expect(res.statusCode).to.be.a('number');
+          expect(res.statusCode).to.equal(403);
 
-        done();
+          done();
+        });
       });
-    });
 
-    it('[POST /login] should login a user and respond a 204 status code', function(done) {
-      request.post({
-        uri: '/login',
-        form: {
-          admin: false
-        }
-      }, function(err, res) {
-        expect(err).to.be.null;
+    it(
+      '[POST /login] should login a user and respond a 204 status code',
+      function (done) {
+        request.post({
+          uri: '/login',
+          form: {
+            admin: false
+          }
+        }, function (err, res) {
+          expect(err).to.be.null;
 
-        expect(res.statusCode).to.be.a('number');
-        expect(res.statusCode).to.equal(204);
+          expect(res.statusCode).to.be.a('number');
+          expect(res.statusCode).to.equal(204);
 
-        done();
+          done();
+        });
       });
-    });
 
-    it('[GET /users] should respond a 204 status code', function(done) {
-      request('/users', function(err, res) {
+    it('[GET /users] should respond a 204 status code', function (done) {
+      rq('/users', function (err, res) {
         expect(err).to.be.null;
 
         expect(res.statusCode).to.be.a('number');
