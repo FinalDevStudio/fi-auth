@@ -2,76 +2,75 @@
 
 const session = require('express-session');
 const bodyParser = require('body-parser');
+const expect = require('chai').expect;
 const request = require('request');
 const express = require('express');
-const expect = require('chai').expect;
 const auth = require('../lib');
 
 const responses = {
   hello: 'Hello, world!'
 };
 
+const ADMIN = 'admin';
+const USER = 'user';
+const POST = 'POST';
+const GET = 'GET';
+const PUT = 'PUT';
+
 /* The auth component configuration */
-const config = {
+const CONFIG = {
   debug: true,
 
   authorizer: (req) => {
     if (req.session.user) {
       if (req.session.user.admin) {
-        return 'admin';
+        return [ADMIN];
       }
 
-      return 'user';
+      return [USER];
     }
 
-    return null;
+    return [];
   },
 
   routes: [{
-    method: 'GET',
+    method: GET,
     path: '/users',
-    allows: 'admin'
+    allows: ADMIN
   }, {
-    method: 'GET',
+    method: GET,
     path: '/profile',
-    allows: [
-      'user',
-      'admin'
-    ]
+    allows: [USER, ADMIN]
   }, {
-    method: [
-      'GET',
-      'POST',
-      'PUT'
-    ],
+    method: [GET, POST, PUT],
     path: [
       '/admins',
       '/admins/dashboard'
     ],
-    allows: 'admin'
+    allows: ADMIN
   }, {
     path: ['/no-methods*'],
-    allows: ['admin', 'user']
+    allows: [USER, ADMIN]
   }]
 };
 
 var rq;
 
-describe('Fi Auth', function () {
+describe('Fi Auth (multiple user roles (array))', function () {
   before(function (done) {
     /* Create the express app */
-    var app = express();
+    const APP = express();
 
     /* Body parser first */
-    app.use(bodyParser.urlencoded({
+    APP.use(bodyParser.urlencoded({
       extended: false
     }));
 
-    app.use(bodyParser.json());
+    APP.use(bodyParser.json());
 
     /* Initialize the session before anything else */
-    app.use(session({
-      secret: 'super secret session key',
+    APP.use(session({
+      secret: 'my:$up3R_5ecrE7-Se5s10n_k3Y==',
       saveUninitialized: true,
       resave: true,
       cookie: {
@@ -80,31 +79,31 @@ describe('Fi Auth', function () {
     }));
 
     /* Initialize the auth component before any route declaration */
-    auth(app, config);
+    auth(APP, CONFIG);
 
     /* Now declare the routes */
-    app.get('/', function (req, res) {
+    APP.get('/', function (req, res) {
       res.send(responses.hello);
     });
 
-    app.post('/login', function (req, res) {
+    APP.post('/login', function (req, res) {
       req.session.user = req.body;
-      res.status(204).end();
+      res.sendStatus(204);
     });
 
-    app.get('/users', function (req, res) {
-      res.status(204).end();
+    APP.get('/users', function (req, res) {
+      res.sendStatus(204);
     });
 
-    app.get('/no-methods', function (req, res) {
-      res.status(204).end();
+    APP.get('/no-methods', function (req, res) {
+      res.sendStatus(204);
     });
 
-    app.get('/no-methods/:id', function (req, res) {
-      res.status(204).end();
+    APP.get('/no-methods/:id', function (req, res) {
+      res.sendStatus(204);
     });
 
-    const server = app.listen(0, () => {
+    const server = APP.listen(0, () => {
       /* Initialize the request object */
       rq = request.defaults({
         baseUrl: 'http://localhost:' + server.address().port,
@@ -137,32 +136,37 @@ describe('Fi Auth', function () {
 
           done();
         });
-      });
+      }
+    );
   });
 
   describe('auth', function () {
-    it('[GET /users] should respond a 403 status code', function (done) {
-      rq('/users', function (err, res) {
-        expect(err).to.be.null;
+    it('[GET /users] should respond a 403 status code',
+      function (done) {
+        rq('/users', function (err, res) {
+          expect(err).to.be.null;
 
-        expect(res.statusCode).to.be.a('number');
-        expect(res.statusCode).to.equal(403);
+          expect(res.statusCode).to.be.a('number');
+          expect(res.statusCode).to.equal(403);
 
-        done();
-      });
-    });
+          done();
+        });
+      }
+    );
 
-    it('[GET /no-methods] should respond a 403 status code', function (
-      done) {
-      rq('/no-methods', function (err, res) {
-        expect(err).to.be.null;
+    it('[GET /no-methods] should respond a 403 status code',
+      function (
+        done) {
+        rq('/no-methods', function (err, res) {
+          expect(err).to.be.null;
 
-        expect(res.statusCode).to.be.a('number');
-        expect(res.statusCode).to.equal(403);
+          expect(res.statusCode).to.be.a('number');
+          expect(res.statusCode).to.equal(403);
 
-        done();
-      });
-    });
+          done();
+        });
+      }
+    );
 
     it('[GET /no-methods/22] should respond a 403 status code',
       function (done) {
@@ -174,17 +178,17 @@ describe('Fi Auth', function () {
 
           done();
         });
-      });
+      }
+    );
 
-    it(
-      '[POST /login] should login a user and respond a 204 status code',
+    it('[POST /login] should login a user and respond a 204 status code',
       function (done) {
-        request.post({
+        rq.post({
           uri: '/login',
           form: {
             admin: false
           }
-        }, function (err, res) {
+        }, (err, res) => {
           expect(err).to.be.null;
 
           expect(res.statusCode).to.be.a('number');
@@ -192,18 +196,21 @@ describe('Fi Auth', function () {
 
           done();
         });
-      });
+      }
+    );
 
-    it('[GET /users] should respond a 204 status code', function (done) {
-      rq('/users', function (err, res) {
-        expect(err).to.be.null;
+    it('[GET /users] should respond a 204 status code',
+      function (done) {
+        rq('/users', function (err, res) {
+          expect(err).to.be.null;
 
-        expect(res.statusCode).to.be.a('number');
-        expect(res.statusCode).to.equal(204);
+          expect(res.statusCode).to.be.a('number');
+          expect(res.statusCode).to.equal(204);
 
-        done();
-      });
-    });
+          done();
+        });
+      }
+    );
 
   });
 });
