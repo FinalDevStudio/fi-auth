@@ -31,7 +31,7 @@
   },
   "scripts": {
     "postversion": "git push --follow-tags",
-    "test": "nyc mocha",
+    "test": "nyc mocha"
   },
   "nyc": {
     "cache": true,
