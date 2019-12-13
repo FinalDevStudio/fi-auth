@@ -3,7 +3,7 @@
   "title": "Fi Auth",
   "description": "Route authorization module for Node.js Express apps",
   "main": "lib/index.js",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "private": false,
   "license": "MIT",
   "author": "Final Development Studio <sorcery@finaldevstudio.com> (http://finaldevstudio.com)",
