@@ -1,10 +1,23 @@
 {
+  "plugins": [
+    "security",
+    "mocha",
+    "node"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:security/recommended",
+    "plugin:mocha/recommended",
+    "plugin:node/recommended"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 2020
+  },
   "env": {
     "browser": false,
     "es6": true,
     "node": true
   },
-  "extends": "eslint:recommended",
   "rules": {
     "no-console": "off",
     "indent": [
