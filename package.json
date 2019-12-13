@@ -30,7 +30,8 @@
     "node": ">=12"
   },
   "scripts": {
-    "test": "nyc mocha"
+    "postversion": "git push --follow-tags",
+    "test": "nyc mocha",
   },
   "nyc": {
     "cache": true,
