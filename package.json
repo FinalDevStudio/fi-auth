@@ -2,10 +2,23 @@
   "name": "fi-auth",
   "title": "Fi Auth",
   "description": "Route authorization module for Node.js Express apps",
+  "main": "lib/index.js",
   "version": "2.0.0",
   "private": false,
   "license": "MIT",
   "author": "Final Development Studio <sorcery@finaldevstudio.com> (http://finaldevstudio.com)",
+  "homepage": "https://github.com/finaldevstudio/fi-auth#readme",
+  "bugs": {
+    "url": "https://github.com/finaldevstudio/fi-auth/issues"
+  },
+  "keywords": [
+    "authorization",
+    "component",
+    "express",
+    "fi-seed",
+    "route",
+    "auth"
+  ],
   "contributors": [
     "Santiago G. Marín <santiago@finaldevstudio.com>"
   ],
@@ -17,7 +30,16 @@
     "node": ">=12"
   },
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha ./test/**/*.js"
+    "test": "nyc mocha"
+  },
+  "nyc": {
+    "cache": true,
+    "reporter": [
+      "html"
+    ],
+    "include": [
+      "lib"
+    ]
   },
   "dependencies": {
     "fi-is": "^3.0.2"
@@ -32,20 +54,9 @@
     "express": "^4.13.1",
     "express-session": "^1.11.3",
     "mocha": "^6.2.2",
+    "nyc": "^14.1.1",
     "request": "^2.60.0",
+    "request-promise-native": "^1.0.8",
     "tough-cookie": "^3.0.1"
-  },
-  "bugs": {
-    "url": "https://github.com/finaldevstudio/fi-auth/issues"
-  },
-  "homepage": "https://github.com/finaldevstudio/fi-auth#readme",
-  "main": "index.js",
-  "keywords": [
-    "authorization",
-    "component",
-    "express",
-    "fi-seed",
-    "route",
-    "auth"
-  ]
+  }
 }
