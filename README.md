@@ -1,3 +1,7 @@
+---
+### No longer maintained.
+---
+
 # Fi Auth
 Route authorization module for Node.js Express applications.
 
